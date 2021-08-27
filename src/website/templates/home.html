@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}
+Home
+{% endblock %}
+
+{% block content %}
+<div>
+    <form method="post">
+     <h3 align="center">Request Delivery</h3>
+        <div class="form-group">
+            <label for="item">Item</label>
+            <input
+                type="text"
+                class="form-control"
+                id="item"
+                name="item"
+                placeholder="Item to be delivered"
+            >
+            <label for="office">Office</label>
+            <input
+                type="text"
+                class="form-control"
+                id="office"
+                name="office"
+                placeholder="Office to deliver to"
+            >
+            </br>
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                Request
+            </button>
+        </div>
+    </form>
+</div>
+</br>
+<div class="deliveries">
+    <div
+        class="my_requests"
+    >
+        <h2>My Requests</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                  <th scope="col">Item</th>
+                  <th scope="col">To</th>
+                  <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if my_requests %}
+                    {% for request in my_requests %}
+                        <tr>
+                            <td>{{ request.item }}</td>
+                            <td>{{ request.receiver }}</td>
+                            <td>{{ request.status }}</td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+
+        </table>
+
+    </div>
+    <div
+        class="delivered_to_me"
+    >
+        <h2>Delivered To Me</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                      <th scope="col">Item</th>
+                      <th scope="col">From</th>
+                      <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if my_deliveries %}
+                        {% for request in my_deliveries %}
+                            <tr>
+                                <td>{{ request.item }}</td>
+                                <td>{{ request.sender }}</td>
+                                <td>{{ request.status }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                </tbody>
+
+            </table>
+    </div>
+</div>
+{% endblock %}

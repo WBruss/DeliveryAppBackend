@@ -1,0 +1,15 @@
+.deliveries{
+    display: flex;
+    flex-direction: row;
+}
+
+.my_requests{
+    width: 100%;
+    min-width: 200px;
+    margin: 5px;
+}
+.delivered_to_me{
+    width: 100%;
+    min-width: 200px;
+    margin: 5px;
+}
