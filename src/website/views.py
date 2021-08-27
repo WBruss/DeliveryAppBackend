@@ -89,6 +89,35 @@ def delivery_to_office(logged_in_user):
         return jsonify({"message": "Token is invalid"}), 405
 
 
+@views.route('/deliveriesadmin/', methods=['GET'])
+@token_required
+def deliveries_admin(logged_in_user):
+    if request.method == 'GET':
+        print("logged_in_user: ", logged_in_user.office)
+        print("logged_in_user: ", logged_in_user.name)
+        print("logged_in_user: ", logged_in_user.role)
+
+        # Get role
+        user_role = logged_in_user.role
+
+        if user_role == 'ADMIN':
+            all_delivery_requests = Delivery.query.all().order_by(desc(Delivery.date))
+            print("Office_delivery ", all_delivery_requests)
+            delivery_schema = DeliverySchema(many=True)
+            delivery_requests = delivery_schema.dump(all_delivery_requests)
+
+            print("my_requests: ", delivery_requests)
+            return jsonify({
+                'status': 0,
+                'message': 'success',
+                'payload': delivery_requests,
+            })
+        else:
+            return jsonify({"message": "Admin is invalid"}), 405
+    else:
+        return jsonify({"message": "Token is invalid"}), 405
+
+
 @views.route('/deliveries/', methods=['GET', 'POST'])
 @token_required
 def deliveries(logged_in_user):
@@ -124,63 +153,6 @@ def deliveries(logged_in_user):
         'message': "Delivery request made",
         'payload': delivery_request
     })
-
-
-@views.route('/', methods=['GET', 'POST'])
-@login_required
-def home():
-    print(current_user.email)
-    print(current_user.id)
-    print(current_user.office)
-    delivery_requests = Delivery.query.filter_by(senderId=current_user.id)
-    my_requests = []
-    for item in delivery_requests:
-        my_request = {
-            'item': item.item,
-            'receiver': User.query.filter_by(id=item.receiverId).first().email,
-            'status': item.status
-        }
-        my_requests.append(my_request)
-
-    deliveries = Delivery.query.filter_by(receiverId=current_user.id)
-    my_deliveries = []
-    for item in deliveries:
-        my_delivery = {
-            'item': item.item,
-            'sender': User.query.filter_by(id=item.senderId).first().email,
-            'status': item.status
-        }
-
-        my_deliveries.append(my_delivery)
-
-    print("my_request")
-    print(my_requests)
-    print("my_deliveries")
-    print(my_deliveries)
-
-    if request.method == 'POST':
-        print(request.date)
-        item = request.form.get('item')
-        office = request.form.get('office')
-
-        office_to = User.query.filter_by(office=office).first()
-
-        if office_to:
-            if len(item) < 2:
-                flash('Item should be greater than 1 character')
-            else:
-                new_delivery = Delivery(
-                    senderId=current_user.id,
-                    receiverId=office_to.id,
-                    item=item,
-                    status=Status.PENDING
-                )
-
-                db.session.add(new_delivery)
-                db.session.commit()
-                flash('Delivery request made', category='success')
-
-    return render_template("home.html", user=current_user, my_requests=my_requests, my_deliveries=my_deliveries)
 
 
 @views.route("api_receive_item", methods=['GET'])
