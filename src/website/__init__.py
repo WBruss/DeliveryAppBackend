@@ -16,6 +16,8 @@ def create_app():
 
     ENV = 'DEV'
 
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
     if ENV == 'DEV':
         app.config['SECRET_KEY'] = 'secretsecretsecret'
         app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://_:_@localhost/delivery_app_db'
