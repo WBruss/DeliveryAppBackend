@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from os import path
@@ -11,8 +13,16 @@ ma = Marshmallow()
 
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'secretsecretsecret'
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+
+    ENV = 'DEV'
+
+    if ENV == 'DEV':
+        app.config['SECRET_KEY'] = 'secretsecretsecret'
+        app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://_:_@localhost/delivery_app_db'
+    else:
+        app.config['SECRET_KEY'] = 'secretsecretsecret'
+        app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
+
     db.init_app(app)
     ma.init_app(app)
     CORS(app)
@@ -24,7 +34,7 @@ def create_app():
     app.register_blueprint(auth, url_prefix='/auth/')
 
     from .models import User, Delivery
-    create_database(app)
+    # create_database(app)
 
     return app
 

@@ -101,7 +101,7 @@ def deliveries_admin(logged_in_user):
         user_role = logged_in_user.role
 
         if user_role == 'ADMIN':
-            all_delivery_requests = Delivery.query.all().order_by(desc(Delivery.date))
+            all_delivery_requests = Delivery.query.order_by(desc(Delivery.date)).all()
             print("Office_delivery ", all_delivery_requests)
             delivery_schema = DeliverySchema(many=True)
             delivery_requests = delivery_schema.dump(all_delivery_requests)
