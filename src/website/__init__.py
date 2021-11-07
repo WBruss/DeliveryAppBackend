@@ -21,7 +21,7 @@ def create_app():
 
     if ENV == 'DEV':
         app.config['SECRET_KEY'] = 'secretsecretsecret'
-        app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://wbruss:Wainaina4384@localhost:6000/delivery_app_test'
+        app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://<username>:<password>@localhost:<port>/delivery_app_test'
     else:
         app.config['SECRET_KEY'] = 'secretsecretsecret'
         app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
