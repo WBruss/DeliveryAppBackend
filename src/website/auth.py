@@ -2,6 +2,8 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 # from flask_login import login_user, login_required, logout_user, current_user
 import jwt
+from flask_cors import CORS, cross_origin
+
 
 from . import db
 from .models import User, UserSchema
@@ -11,9 +13,11 @@ import datetime
 
 
 auth = Blueprint('auth', __name__)
+CORS(auth)
 
 
 @auth.route('/loginapi/', methods=['POST'])
+@cross_origin(origin='*')
 def login_api():
     if request.method == 'POST':
         print(request.get_json())
@@ -36,10 +40,11 @@ def login_api():
                     'name': user.name,
                     'role': user.role,
                     'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60)
-                }, 'supersecretkeysupersecretkeysupersecretkey')
+                }, 'supersecretkeysu')
                 response_message['status'] = 0
                 response_message['message'] = 'Login Successful'
-                response_message['token'] = token.decode('UTF-8')
+                response_message['token'] = token
+                print("Token: ", token)
             else:
                 response_message['status'] = 1
                 response_message['message'] = 'Invalid Credentials'

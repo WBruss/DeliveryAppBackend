@@ -4,12 +4,16 @@ from flask import Blueprint, render_template, request, flash, jsonify
 from flask_login import login_required, current_user
 from sqlalchemy import desc
 from functools import wraps
+from flask_cors import CORS
+
 import jwt
 
 from . import db
 from .models import Delivery, User, Status, DeliverySchema, UserSchema
 
 views = Blueprint('views', __name__)
+
+CORS(views)
 
 
 def token_required(f):
@@ -24,8 +28,11 @@ def token_required(f):
             return jsonify({"message": "Token is missing"}), 401
 
         try:
-            data = jwt.decode(token, "supersecretkeysupersecretkeysupersecretkey")
+            print("logged_in_user ", token)
+            data = jwt.decode(token, "supersecretkeysu", ["HS256"])
+            print("data ", data)
             logged_in_user = User.query.filter_by(id=data['id']).first()
+            print("logged_in_user ", logged_in_user)
         except:
             return jsonify({"message": "Token is invalid"}), 401
 
@@ -72,7 +79,8 @@ def delivery_to_office(logged_in_user):
         print("secretary: ", secretary)
 
         if secretary:
-            office_delivery_requests = Delivery.query.filter_by(office=logged_in_user.office).order_by(desc(Delivery.date))
+            office_delivery_requests = Delivery.query.filter_by(office=logged_in_user.office).order_by(
+                desc(Delivery.date))
             print("Office_delivery ", office_delivery_requests)
             delivery_schema = DeliverySchema(many=True)
             office_requests = delivery_schema.dump(office_delivery_requests)
@@ -121,7 +129,6 @@ def deliveries_admin(logged_in_user):
 @views.route('/deliveries/', methods=['GET', 'POST'])
 @token_required
 def deliveries(logged_in_user):
-
     if request.method == 'POST':
         print("logged_in_user: ", logged_in_user)
         data = request.get_json()
@@ -163,7 +170,7 @@ def receive_item(logged_in_user):
     if delivery_id:
         delivery_query = Delivery.query.filter_by(id=delivery_id).first()
         delivery_query.status = Status.RECEIVED
-        print(delivery_query    )
+        print(delivery_query)
         print(delivery_query.status)
         db.session.commit()
         delivery_schema = DeliverySchema()
@@ -181,4 +188,3 @@ def receive_item(logged_in_user):
                 "status": 1,
                 "message": "Invalid delivery request id"
             })
-

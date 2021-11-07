@@ -13,6 +13,7 @@ ma = Marshmallow()
 
 def create_app():
     app = Flask(__name__)
+    CORS(app)
 
     ENV = 'DEV'
 
@@ -20,14 +21,13 @@ def create_app():
 
     if ENV == 'DEV':
         app.config['SECRET_KEY'] = 'secretsecretsecret'
-        app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://_:_@localhost/delivery_app_db'
+        app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://wbruss:Wainaina4384@localhost:6000/delivery_app_test'
     else:
         app.config['SECRET_KEY'] = 'secretsecretsecret'
         app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
 
     db.init_app(app)
     ma.init_app(app)
-    CORS(app)
 
     from .views import views
     from .auth import auth
@@ -36,7 +36,8 @@ def create_app():
     app.register_blueprint(auth, url_prefix='/auth/')
 
     from .models import User, Delivery
-    # create_database(app)
+    create_database(app)
+
 
     return app
 
